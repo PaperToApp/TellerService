@@ -123,6 +123,7 @@ defmodule Watermelon.Banking.DummyDataGenerator do
   def generate_account_resource do
     institution = take_random_institution()
     account_id = random_account_id()
+    {account_number, last_four} = generate_random_account()
     merchant_name = take_random_merchant()
     merchant_category = take_random_merchant_category()
 
@@ -145,7 +146,8 @@ defmodule Watermelon.Banking.DummyDataGenerator do
         id: name_to_snake_case(institution),
         name: institution
       },
-      last_four: "",
+      account_number: account_number,
+      last_four: last_four,
       links: [],
       name: take_random_type(),
       subtype: "checking",
@@ -229,19 +231,28 @@ defmodule Watermelon.Banking.DummyDataGenerator do
     @institutions |> Enum.random()
   end
 
+  def generate_random_account() do
+    four_digit_number = Enum.random(1000..9999) |> to_string
+    {random_with_suffix(four_digit_number), four_digit_number}
+  end
+
   defp random_transaction_number() do
-    gerenerate_random_uniq("txn")
+    random_with_prefix("txn")
   end
 
   defp random_account_id() do
-    gerenerate_random_uniq("acc")
+    random_with_prefix("acc")
   end
 
   defp random_enrollment_number() do
-    gerenerate_random_uniq("enr")
+    random_with_prefix("enr")
   end
 
-  defp gerenerate_random_uniq(prefix) do
+  defp random_with_suffix(suffix) do
+    "#{random_number}#{suffix}"
+  end
+
+  defp random_with_prefix(prefix) do
     "#{prefix}_#{random_number}"
   end
 
