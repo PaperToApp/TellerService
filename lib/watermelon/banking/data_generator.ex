@@ -114,12 +114,31 @@ defmodule Watermelon.Banking.DummyDataGenerator do
 
   @institutions ["Chase", "Bank of America", "Wells Fargo", "Citibank", "Capital One"]
 
+  def generate_data_for_2_accounts_10_days() do
+    # generate_account_with_transactions
+    for i <- 1..2, do: generate_account_resource()
+  end
+
   # TODO put me in a struct
   def generate_account_resource do
     institution = take_random_institution()
+    account_id = random_account_id()
+    merchant_name = take_random_merchant()
+    merchant_category = take_random_merchant_category()
+
+    transactions =
+      for i <- 1..10,
+          do:
+            generate_transaction_with(%{
+              account_id: account_id,
+              merchant_name: merchant_name,
+              merchant_category: merchant_category,
+              transaction_date: generate_date_for_day(i)
+            })
 
     %{
-      id: random_account_id(),
+      id: account_id,
+      transactions: transactions,
       enrollment_id: random_enrollment_number,
       currency: "USD",
       institution: %{
@@ -142,7 +161,7 @@ defmodule Watermelon.Banking.DummyDataGenerator do
       account_id: random_account_id,
       merchant_name: merchant_name,
       merchant_category: merchant_category,
-      transaction_date: random_date(),
+      transaction_date: random_date()
     })
   end
 
@@ -179,9 +198,15 @@ defmodule Watermelon.Banking.DummyDataGenerator do
     # give transaction a date, witin last 90 days
     random_number_upto_90 = Enum.random(-1..-90)
 
-    Date.utc_today
+    Date.utc_today()
     |> Date.add(random_number_upto_90)
-    |>  Date.to_iso8601
+    |> Date.to_iso8601()
+  end
+
+  def generate_date_for_day(number) do
+    Date.utc_today()
+    |> Date.add(number * -1)
+    |> Date.to_iso8601()
   end
 
   defp random_amount() do
