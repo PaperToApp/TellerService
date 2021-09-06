@@ -30,6 +30,8 @@ config :watermelon, WatermelonWeb.Endpoint,
     ]
   ]
 
+  config :watermelon, teller_service: Watermelon.Banking.TellerServiceImplementation
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

@@ -12,6 +12,8 @@ config :watermelon, Watermelon.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
+config :watermelon, teller_service: Watermelon.Banking.TellerServiceImplementation
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :watermelon, WatermelonWeb.Endpoint,
