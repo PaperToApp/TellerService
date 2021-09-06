@@ -129,25 +129,95 @@ defmodule Watermelon.Banking.DummyDataGenerator do
       last_four: "",
       links: [],
       name: take_random_type(),
-        subtype: "checking",
-        type: "depository"
+      subtype: "checking",
+      type: "depository"
     }
+  end
+
+  def generate_transaction() do
+    merchant_name = take_random_merchant()
+    merchant_category = take_random_merchant_category()
+
+    generate_transaction_with(%{
+      account_id: random_account_id,
+      merchant_name: merchant_name,
+      merchant_category: merchant_category,
+      transaction_date: random_date(),
+    })
+  end
+
+  defp generate_transaction_with(
+         %{
+           account_id: account_id,
+           merchant_name: merchant_name,
+           merchant_category: merchant_category,
+           transaction_date: transaction_date
+         } = data
+       ) do
+    %{
+      account_id: account_id,
+      amount: random_amount(),
+      id: random_transaction_number(),
+      description: merchant_name,
+      date: transaction_date,
+      details: %{
+        processing_status: "complete",
+        category: merchant_category,
+        counterparty: %{
+          name: merchant_name,
+          type: "organization"
+        }
+      },
+      id: random_transaction_number(),
+      status: "posted",
+      type: "ach",
+      links: []
+    }
+  end
+
+  defp random_date() do
+    # give transaction a date, witin last 90 days
+    random_number_upto_90 = Enum.random(-1..-90)
+
+    Date.utc_today
+    |> Date.add(random_number_upto_90)
+    |>  Date.to_iso8601
+  end
+
+  defp random_amount() do
+    Enum.random(49..100)
   end
 
   defp take_random_type() do
     @account_names |> Enum.random()
   end
 
+  defp take_random_merchant() do
+    @merchants |> Enum.random()
+  end
+
+  defp take_random_merchant_category() do
+    @merchant_categories |> Enum.random()
+  end
+
   defp take_random_institution() do
     @institutions |> Enum.random()
   end
 
+  defp random_transaction_number() do
+    gerenerate_random_uniq("txn")
+  end
+
   defp random_account_id() do
-    "acc_#{random_number}"
+    gerenerate_random_uniq("acc")
   end
 
   defp random_enrollment_number() do
-    "enr_nm#{random_number}"
+    gerenerate_random_uniq("enr")
+  end
+
+  defp gerenerate_random_uniq(prefix) do
+    "#{prefix}_#{random_number}"
   end
 
   defp name_to_snake_case(name) do
