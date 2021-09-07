@@ -119,28 +119,29 @@ defmodule Watermelon.Banking.DummyDataGenerator do
   end
 
   defp generate_tat(token_count \\ 2, account_count \\ 5, transaction_count \\ 5) do
-    for i <- 1..token_count do
+    for _i <- 1..token_count do
       %{
         generate_urlsafe_token() =>
-          for j <- 1..account_count do
+          for _j <- 1..account_count do
             institution = take_random_institution()
             account_id = random_account_id()
             {account_number, last_four} = generate_random_account()
 
             transactions =
               for k <- 1..transaction_count,
-                  do:   generate_transaction_with(%{
+                  do:
+                    generate_transaction_with(%{
                       account_id: account_id,
                       merchant_name: take_random_merchant(),
                       merchant_category: take_random_merchant_category(),
                       transaction_date: generate_date_for_day(k),
-                      transaction_amount: random_amount(),
+                      transaction_amount: random_amount()
                     })
 
             %{
               id: account_id,
               transactions: transactions,
-              enrollment_id: random_enrollment_number,
+              enrollment_id: random_enrollment_number(),
               currency: "USD",
               institution: %{
                 id: name_to_snake_case(institution),
@@ -165,41 +166,6 @@ defmodule Watermelon.Banking.DummyDataGenerator do
   # TODO put me in a struct
   def generate_account_resource do
     generate_tat(2, 2, 10)
-
-    # institution = take_random_institution()
-    # account_id = random_account_id()
-    # {account_number, last_four} = generate_random_account()
-    # merchant_name = take_random_merchant()
-    # merchant_category = take_random_merchant_category()
-    # transaction_amount = random_amount()
-
-    # transactions =
-    #   for i <- 1..10,
-    #       do:
-    #         generate_transaction_with(%{
-    #           account_id: account_id,
-    #           merchant_name: merchant_name,
-    #           merchant_category: merchant_category,
-    #           transaction_date: generate_date_for_day(i),
-    #           transaction_amount: transaction_amount
-    #         })
-
-    # %{
-    #   id: account_id,
-    #   transactions: transactions,
-    #   enrollment_id: random_enrollment_number,
-    #   currency: "USD",
-    #   institution: %{
-    #     id: name_to_snake_case(institution),
-    #     name: institution
-    #   },
-    #   account_number: account_number,
-    #   last_four: last_four,
-    #   links: [],
-    #   name: take_random_type(),
-    #   subtype: "checking",
-    #   type: "depository"
-    # }
   end
 
   def generate_transaction() do
@@ -207,10 +173,11 @@ defmodule Watermelon.Banking.DummyDataGenerator do
     merchant_category = take_random_merchant_category()
 
     generate_transaction_with(%{
-      account_id: random_account_id,
+      account_id: random_account_id(),
       merchant_name: merchant_name,
       merchant_category: merchant_category,
-      transaction_date: random_date()
+      transaction_date: random_date(),
+      transaction_amount: random_amount()
     })
   end
 
@@ -221,7 +188,7 @@ defmodule Watermelon.Banking.DummyDataGenerator do
            merchant_category: merchant_category,
            transaction_date: transaction_date,
            transaction_amount: transaction_amount
-         } = data
+         } = _data
        ) do
     %{
       account_id: account_id,
@@ -253,7 +220,7 @@ defmodule Watermelon.Banking.DummyDataGenerator do
     |> Date.to_iso8601()
   end
 
-  def generate_date_for_day(number) do
+  defp generate_date_for_day(number) do
     Date.utc_today()
     |> Date.add(number * -1)
     |> Date.to_iso8601()
@@ -287,7 +254,7 @@ defmodule Watermelon.Banking.DummyDataGenerator do
     @institutions |> Enum.random()
   end
 
-  def generate_random_account() do
+  defp generate_random_account() do
     four_digit_number = Enum.random(1000..9999) |> to_string
     {random_with_suffix(four_digit_number), four_digit_number}
   end
@@ -305,11 +272,11 @@ defmodule Watermelon.Banking.DummyDataGenerator do
   end
 
   defp random_with_suffix(suffix) do
-    "#{random_number}#{suffix}"
+    "#{random_number()}#{suffix}"
   end
 
   defp random_with_prefix(prefix) do
-    "#{prefix}_#{random_number}"
+    "#{prefix}_#{random_number()}"
   end
 
   defp name_to_snake_case(name) do
