@@ -114,45 +114,92 @@ defmodule Watermelon.Banking.DummyDataGenerator do
 
   @institutions ["Chase", "Bank of America", "Wells Fargo", "Citibank", "Capital One"]
 
+  def generate_token_aaccount_transactions() do
+    generate_tat(2, 2, 3)
+  end
+
+  defp generate_tat(token_count \\ 2, account_count \\ 5, transaction_count \\ 5) do
+    for i <- 1..token_count do
+      %{
+        generate_urlsafe_token() =>
+          for j <- 1..account_count do
+            institution = take_random_institution()
+            account_id = random_account_id()
+            {account_number, last_four} = generate_random_account()
+
+            transactions =
+              for k <- 1..transaction_count,
+                  do:   generate_transaction_with(%{
+                      account_id: account_id,
+                      merchant_name: take_random_merchant(),
+                      merchant_category: take_random_merchant_category(),
+                      transaction_date: generate_date_for_day(k),
+                      transaction_amount: random_amount(),
+                    })
+
+            %{
+              id: account_id,
+              transactions: transactions,
+              enrollment_id: random_enrollment_number,
+              currency: "USD",
+              institution: %{
+                id: name_to_snake_case(institution),
+                name: institution
+              },
+              account_number: account_number,
+              last_four: last_four,
+              links: [],
+              name: take_random_type(),
+              subtype: "checking",
+              type: "depository"
+            }
+          end
+      }
+    end
+  end
+
   def generate_data_for_2_accounts_10_days() do
-    # generate_account_with_transactions
-    for i <- 1..2, do: generate_account_resource()
+    generate_tat(2, 2, 10)
   end
 
   # TODO put me in a struct
   def generate_account_resource do
-    institution = take_random_institution()
-    account_id = random_account_id()
-    {account_number, last_four} = generate_random_account()
-    merchant_name = take_random_merchant()
-    merchant_category = take_random_merchant_category()
+    generate_tat(2, 2, 10)
 
-    transactions =
-      for i <- 1..10,
-          do:
-            generate_transaction_with(%{
-              account_id: account_id,
-              merchant_name: merchant_name,
-              merchant_category: merchant_category,
-              transaction_date: generate_date_for_day(i)
-            })
+    # institution = take_random_institution()
+    # account_id = random_account_id()
+    # {account_number, last_four} = generate_random_account()
+    # merchant_name = take_random_merchant()
+    # merchant_category = take_random_merchant_category()
+    # transaction_amount = random_amount()
 
-    %{
-      id: account_id,
-      transactions: transactions,
-      enrollment_id: random_enrollment_number,
-      currency: "USD",
-      institution: %{
-        id: name_to_snake_case(institution),
-        name: institution
-      },
-      account_number: account_number,
-      last_four: last_four,
-      links: [],
-      name: take_random_type(),
-      subtype: "checking",
-      type: "depository"
-    }
+    # transactions =
+    #   for i <- 1..10,
+    #       do:
+    #         generate_transaction_with(%{
+    #           account_id: account_id,
+    #           merchant_name: merchant_name,
+    #           merchant_category: merchant_category,
+    #           transaction_date: generate_date_for_day(i),
+    #           transaction_amount: transaction_amount
+    #         })
+
+    # %{
+    #   id: account_id,
+    #   transactions: transactions,
+    #   enrollment_id: random_enrollment_number,
+    #   currency: "USD",
+    #   institution: %{
+    #     id: name_to_snake_case(institution),
+    #     name: institution
+    #   },
+    #   account_number: account_number,
+    #   last_four: last_four,
+    #   links: [],
+    #   name: take_random_type(),
+    #   subtype: "checking",
+    #   type: "depository"
+    # }
   end
 
   def generate_transaction() do
@@ -172,12 +219,13 @@ defmodule Watermelon.Banking.DummyDataGenerator do
            account_id: account_id,
            merchant_name: merchant_name,
            merchant_category: merchant_category,
-           transaction_date: transaction_date
+           transaction_date: transaction_date,
+           transaction_amount: transaction_amount
          } = data
        ) do
     %{
       account_id: account_id,
-      amount: random_amount(),
+      amount: transaction_amount,
       id: random_transaction_number(),
       description: merchant_name,
       date: transaction_date,
@@ -209,6 +257,14 @@ defmodule Watermelon.Banking.DummyDataGenerator do
     Date.utc_today()
     |> Date.add(number * -1)
     |> Date.to_iso8601()
+  end
+
+  defp generate_urlsafe_token() do
+    length = 10
+
+    :crypto.strong_rand_bytes(length)
+    |> Base.url_encode64()
+    |> binary_part(0, length)
   end
 
   defp random_amount() do
