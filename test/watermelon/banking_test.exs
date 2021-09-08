@@ -8,7 +8,8 @@ defmodule Watermelon.BankingTest do
     # setup :list_accounts
 
     test "list down the accounts" do
-      {:ok, _accounts} = Banking.list_accounts()
+      {:ok, accounts} = Banking.list_accounts("9JeEWBfZvB")
+      IO.inspect(accounts)
     end
   end
 end

@@ -1,8 +1,8 @@
 defmodule Watermelon.Banking do
   alias Watermelon.Banking.TellerService
 
-  def list_accounts() do
-    service.list_accounts()
+  def list_accounts(token) do
+    service.list_accounts(token)
   end
 
   defp service() do

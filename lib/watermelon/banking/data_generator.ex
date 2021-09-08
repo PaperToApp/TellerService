@@ -120,8 +120,8 @@ defmodule Watermelon.Banking.DummyDataGenerator do
 
   defp generate_tat(token_count \\ 2, account_count \\ 5, transaction_count \\ 5) do
     for _i <- 1..token_count do
-      %{
-        generate_urlsafe_token() =>
+      {
+        :"#{generate_urlsafe_token()}",
           for _j <- 1..account_count do
             institution = take_random_institution()
             account_id = random_account_id()
