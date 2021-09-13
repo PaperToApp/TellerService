@@ -37,6 +37,11 @@ defmodule WatermelonWeb.Router do
     scope "/" do
       pipe_through :browser
       live_dashboard "/dashboard", metrics: WatermelonWeb.Telemetry
+
+      scope "/api" do
+        get "/teller/accounts", WatermelonWeb.TellerController, :accounts
+      end
+
     end
   end
 end
